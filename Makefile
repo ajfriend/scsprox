@@ -8,5 +8,5 @@ test:
 	python3 -m pytest -vs
 
 clean:
-	find . -name "*.cache" -exec rm -rf {} \;
-	find . -name "__pycache__" -exec rm -rf {} \;
+	-find . -name "*.cache" -exec rm -rf {} \;
+	-find . -name "__pycache__" -exec rm -rf {} \;
