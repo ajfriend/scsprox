@@ -31,6 +31,8 @@ def compare_proxes(prob, x_vars):
     """ Form the prox problem, put in some random data,
     and test that the output from solving with CVXPY/SCS
     is the same as solving with my custom proxer that skips CVXPY
+
+    Should have identical input data, so output should be *exactly* identical.
     """
     data, indmap, solmap = stuffed_prox(prob, x_vars)
 

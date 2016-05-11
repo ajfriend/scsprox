@@ -159,6 +159,11 @@ def get_solmap(prob, x_vars, data=None):
     ----------
     x_vars: dict
         k:v pairs, where v is a CVXPY Variable
+
+    Returns
+    -------
+    dict
+        elements are Python `slice` objects.
     """
     if data is None:
         data = prob.get_problem_data('SCS')
