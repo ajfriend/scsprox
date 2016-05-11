@@ -129,19 +129,12 @@ def restuff(data, indmap, x0_vals):
         if k != '__tau':
             b[indmap[k]] = -2*x0_vals[k]
 
-def get_solmap(prob, x_vars, data=None):
+def dummy_scs_output(data):
+    """ `data` is a dict of SCS input data
     """
-    Parameters
-    ----------
-    x_vars: dict
-        k:v pairs, where v is a CVXPY Variable
-    """
-    if data is None:
-        data = prob.get_problem_data('SCS')
-    
     x = np.random.randn(*data['c'].shape)
     y = np.random.randn(*data['b'].shape)
-    
+
     out = {'info': {'dobj': 0,
           'iter': 0,
           'pobj': 0,
@@ -157,6 +150,20 @@ def get_solmap(prob, x_vars, data=None):
          'x': x,
          'y': y,
          's': y}
+
+    return out
+
+def get_solmap(prob, x_vars, data=None):
+    """
+    Parameters
+    ----------
+    x_vars: dict
+        k:v pairs, where v is a CVXPY Variable
+    """
+    if data is None:
+        data = prob.get_problem_data('SCS')
+    
+    out = dummy_scs_output(data)
 
     prob.unpack_results('SCS', out)
     
