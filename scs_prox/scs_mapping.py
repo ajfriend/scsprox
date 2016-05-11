@@ -107,7 +107,7 @@ def param_map(pxprob, x0_vars):
             
             indmap[k] = slice(ind,ind+len(x))
     
-    return indmap
+    return data, indmap
 
 
 def restuff(data, indmap, x0_vals):

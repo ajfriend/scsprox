@@ -5,9 +5,6 @@ import numpy as np
 import scs
 
 def compare_sols(prob, x_vars):
-    # helper function could take in prob, x_vars
-    # should work the same for proxed and unproxed function
-    # oooh, what about tau?
     solmap = get_solmap(prob, x_vars)
 
     # get dummy SCS output
