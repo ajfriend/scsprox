@@ -10,3 +10,4 @@ test:
 clean:
 	-find . -name "*.cache" -exec rm -rf {} \;
 	-find . -name "__pycache__" -exec rm -rf {} \;
+	-rm -rf .ipynb_checkpoints/
