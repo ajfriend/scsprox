@@ -4,6 +4,11 @@ import scs
 
 from scs_prox.scs_prox import stuffed_prox, do_prox
 
+# todo: warm-starting
+# evaluate on a real problem to check that its doing what we want
+# have it return info, or, at least, make info accessible.
+# timing info?
+
 class Prox:
     def __init__(self, prob, x_vars):
         """ Forms the proximal problem, stuffs the appropriate SCS matrices,
