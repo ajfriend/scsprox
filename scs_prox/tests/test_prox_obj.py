@@ -14,7 +14,7 @@ def test2():
     m,n = 10, 5
     seed = 0
     prob, x_vars, true_sol = example_rand(m,n,seed)
-    prox = Prox(prob, x_vars, verbose=True)
+    prox = Prox(prob, x_vars, verbose=False)
 
     prox.prox()
     assert prox.info['status'] == 'Solved'
@@ -31,9 +31,23 @@ def test2():
     assert prox.info['status'] == 'Solved'
     assert prox.info['iter'] >= 20
 
+    # check types and sizes
     assert isinstance(x0['z'], float)
     assert isinstance(x0['x'], np.ndarray)
     assert isinstance(x0['y'], np.ndarray)
 
     assert x0['x'].shape == (n,)
     assert x0['y'].shape == (m,)
+
+    # check that proximal iteration works
+    for k in 'x', 'y', 'z':
+        # should not be close to start
+        assert not np.allclose(x0[k], true_sol[k], atol=1e-4) 
+
+    prox.work.settings['eps'] = 1e-5
+    for _ in range(100):
+        x0 = prox.prox(x0, verbose=False)
+
+    for k in 'x', 'y', 'z':
+        assert np.allclose(x0[k], true_sol[k], atol=1e-4) 
+    
