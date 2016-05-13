@@ -188,5 +188,7 @@ def extract_sol(scs_x, solmap):
     x_vals = {}
     for k in solmap:
         x_vals[k] = scs_x[solmap[k]]
+        if len(x_vals[k]) == 1:
+            x_vals[k] = x_vals[k][0]
         
     return x_vals
