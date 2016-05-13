@@ -82,5 +82,8 @@ class Prox:
 
         self._warm_start = dict(x=scs_sol['x'], y=scs_sol['y'], s=scs_sol['s'])
 
+        if 'Solved' not in self.info['status']:
+            raise RuntimeError('Unexpected solver status: {}'.format(self.info['status']))
+
 
         return x
