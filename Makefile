@@ -8,6 +8,7 @@ test:
 	py.test scs_prox -vs
 
 clean:
-	-find . -name "*.cache" -exec rm -rf {} \;
-	-find . -name "__pycache__" -exec rm -rf {} \;
+	#-find . -name "*.cache" -exec rm -rf {} \;
+	#-find . -name "__pycache__" -exec rm -rf {} \;
+	-rm -rf __pycache__ scs_prox/__pycache__ scs_prox/tests/__pycache__
 	-rm -rf .ipynb_checkpoints/
