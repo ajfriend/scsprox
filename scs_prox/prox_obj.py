@@ -5,13 +5,22 @@ import cyscs
 from scs_prox.scs_prox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
-# todo: warm-starting
-# evaluate on a real problem to check that its doing what we want
-# have it return info, or, at least, make info accessible.
-# timing info?
-# initial factorization timing, and last solve time
-
 class Prox:
+    """ Class which forms the prox problem for a given CVXPY problem and variables.
+
+    SCS input data is stuffed only once at initialization to save time.
+    Class takes care of re-stuffing data for new x0 prox input,
+    and uses CySCS to cache the SCS matrix factorization for speed.
+
+    The class also automatically warm-starts the SCS solver based on
+    the previous solution.
+
+    SCS options can be passed in as key-word arguments to the init
+    or the .do() function. This might set the max iters or the solver tolerance.
+
+    Solver info can be seen from the prox.info attribute.
+
+    """
     def __init__(self, prob, x_vars, **kwargs):
         """ Forms the proximal problem, stuffs the appropriate SCS matrices,
         and stores the array/matrix data.
@@ -63,7 +72,7 @@ class Prox:
         self._warm_start = None
 
 
-    def prox(self, x0=None, rho=1.0, **kwargs):
+    def do(self, x0=None, rho=1.0, **kwargs):
         """ Do the prox computation based on values in `x0`.
         `x0` can be None or an empty dict, in which case, it will prox
         on the 0 element of the appropriate size.

@@ -1,1 +1,2 @@
-from . import examples, scs_mapping, scs_prox, verify, prox_obj
+from . import examples
+from .prox_obj import Prox
