@@ -1,7 +1,7 @@
 import numpy as np
 
-from scs_prox.scs_mapping import get_solmap, extract_sol, form_prox, rand_param_vals
-from scs_prox.examples import example, example2, example3
+from scsprox.scs_mapping import get_solmap, extract_sol, form_prox, rand_param_vals
+from scsprox.examples import example, example2, example3
 
 def test_1():
 

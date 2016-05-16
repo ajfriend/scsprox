@@ -2,7 +2,7 @@
 import numpy as np
 import cyscs
 
-from scs_prox.scs_prox import stuffed_prox, do_prox_work
+from scsprox.scsprox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
 class Prox:

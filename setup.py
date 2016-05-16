@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='scs_prox',
+    name='scsprox',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -26,7 +26,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(),
+    packages=['scsprox'],
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
@@ -36,16 +36,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs'],
-
-    # List additional groups of dependencies here (e.g. development
-    # dependencies). You can install these using the following syntax,
-    # for example:
-    # $ pip install -e .[dev,test]
-    extras_require={
-        'dev': ['check-manifest'],
-        'test': ['coverage'],
-    },
+    install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs', 'pytest'],
 
 
 )

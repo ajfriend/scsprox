@@ -1,9 +1,9 @@
 import numpy as np
 
-from scs_prox.scs_prox import stuffed_prox, do_prox
-from scs_prox.examples import example, example2, example3
+from scsprox.scsprox import stuffed_prox, do_prox
+from scsprox.examples import example, example2, example3
 
-from scs_prox.scs_mapping import form_prox, rand_param_vals
+from scsprox.scs_mapping import form_prox, rand_param_vals
 
 def test():
     prob, x_vars = example()
