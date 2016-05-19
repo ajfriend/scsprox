@@ -5,8 +5,8 @@ process memory to see if memory is leaking at all.
 
 import os
 import psutil
-from scs_prox import Prox
-from scs_prox.examples import example_rand
+from proximal import Prox
+from proximal.examples import example_rand
 
 def get_mem_MB():
     process = psutil.Process(os.getpid())
