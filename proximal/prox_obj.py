@@ -36,19 +36,19 @@ class Prox:
         """
         self.info = {}
 
-        with DictTimer('stuffing_time', self.info):
-            data, self.indmap, self.solmap = stuffed_prox(prob, x_vars)
+        #with DictTimer('stuffing_time', self.info):
+        data, self.indmap, self.solmap = stuffed_prox(prob, x_vars)
 
-        with DictTimer('init_time_outer', self.info):
-            self.work = cyscs.Workspace(data, data['dims'], **kwargs)
+        #with DictTimer('init_time_outer', self.info):
+        self.work = cyscs.Workspace(data, data['dims'], **kwargs)
 
         self.bc = dict(b=data['b'],c=data['c'])
 
         self._warm_start = None
 
-        self.info['init_time_inner'] = self.work.info['setupTime']*1e-3 # convert to seconds
+        self.info['setup_time'] = self.work.info['setupTime']*1e-3 # convert to seconds
 
-        for key in 'prox_time_outer', 'prox_time_inner', 'iter', 'status':
+        for key in 'solve_time', 'iter', 'status':
             self.info[key] = None
 
     def zero_elem(self):
@@ -81,11 +81,11 @@ class Prox:
         if not x0:
             x0 = self.zero_elem()
 
-        with DictTimer('prox_time_outer', self.info):
-            x, scs_sol = do_prox_work(self.work, self.bc, self.indmap,
+        #with DictTimer('prox_time_outer', self.info):
+        x, scs_sol = do_prox_work(self.work, self.bc, self.indmap,
                          self.solmap, x0, rho, warm_start=self._warm_start, **kwargs)
 
-        self.info['prox_time_inner'] = self.work.info['solveTime']*1e-3
+        self.info['solve_time'] = self.work.info['solveTime']*1e-3
         self.info['iter'] = self.work.info['iter']
         self.info['status'] = self.work.info['status']
 
