@@ -2,7 +2,7 @@
 import numpy as np
 import cyscs
 
-from .scsprox import stuffed_prox, do_prox_work
+from scsprox.scsprox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
 class Prox:
@@ -21,7 +21,7 @@ class Prox:
     Solver info can be seen from the prox.info attribute.
 
     """
-    def __init__(self, prob, x_vars, **kwargs):
+    def __init__(self, prob, x_vars, verbose=False, **kwargs):
         """ Forms the proximal problem, stuffs the appropriate SCS matrices,
         and stores the array/matrix data.
         After initialization, doesn't depend on CVXPY in any way.
@@ -34,6 +34,7 @@ class Prox:
             of the variables as they'll be referred to in the input to the prox
 
         """
+        kwargs['verbose'] = verbose
         self.info = {}
 
         #with DictTimer('stuffing_time', self.info):

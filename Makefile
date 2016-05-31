@@ -11,7 +11,7 @@ testslow:
 	py.test scsprox --runslow
 
 clean:
-	-pip uninstall scsprox
+	-pip uninstall scsprox -y
 	-rm -rf build/ dist/ scsprox.egg-info/
 	#-find . -name "*.cache" -exec rm -rf {} \;
 	#-find . -name "__pycache__" -exec rm -rf {} \;

@@ -5,6 +5,17 @@ import numpy as np
 def copy_prob(prob):
     return cvx.Problem(prob.objective, prob.constraints)
 
+def get_scs_data(prob):
+    data = prob.get_problem_data('SCS')
+
+    # convert sparse indices and pointers to int64 so that CySCS doesn't
+    # need to convert them itself (which raises a warning).
+    A = data['A']
+    A.indptr = A.indptr.astype(np.int64)
+    A.indices = A.indices.astype(np.int64)
+
+    return data
+
 
 def form_prox(prob, x_vars):
     """ Given a CVXPY problem, form its prox.
@@ -89,10 +100,7 @@ def param_map(pxprob, x0_vars):
     # set the x0 parameters to random values, and then find those random values in the vectors
     rand_param_vals(x0_vars)
     
-    data = pxprob.get_problem_data('SCS')
-    # A = data['A']
-    # A.indptr = A.indptr.astype(np.int64)
-    # A.indices = A.indices.astype(np.int64)
+    data = get_scs_data(pxprob)
     
     # tau may be mapped to multiple locations in the c vector
     taus, = np.where(data['c']==x0_vars['__tau'].value) 
@@ -169,7 +177,7 @@ def get_solmap(prob, x_vars, data=None):
         elements are Python `slice` objects.
     """
     if data is None:
-        data = prob.get_problem_data('SCS')
+        data = get_scs_data(prob)
     
     out = dummy_scs_output(data)
 
