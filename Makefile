@@ -7,15 +7,12 @@
 test:
 	py.test scsprox -vs
 
-testslow:
-	py.test scsprox --runslow
-
 clean:
 	-pip uninstall scsprox -y
 	-rm -rf build/ dist/ scsprox.egg-info/
 	#-find . -name "*.cache" -exec rm -rf {} \;
 	#-find . -name "__pycache__" -exec rm -rf {} \;
-	-rm -rf __pycache__ scsprox/__pycache__ scsprox/tests/__pycache__ .cache
+	-rm -rf __pycache__ scsprox/__pycache__ scsprox/test/__pycache__ .cache scsprox/test/*.pyc scsprox/*.pyc
 	-rm -rf .ipynb_checkpoints/
 
 install:
