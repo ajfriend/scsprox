@@ -1,4 +1,6 @@
 # `scsprox`
+[![Build Status](https://travis-ci.org/ajfriend/scsprox.svg?branch=master)](https://travis-ci.org/ajfriend/scsprox)
+
 `scsprox` creates fast proximal operators from CVXPY `Problem` objects.
 
 `scsprox` uses CVXPY to form the proximal operator problem and

@@ -20,3 +20,9 @@ clean:
 
 install:
 	python setup.py install
+
+distribute: clean
+	python setup.py sdist
+	python setup.py bdist_wheel --universal
+	#twine register dist/*.whl
+	twine upload dist/*
