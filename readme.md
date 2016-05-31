@@ -17,6 +17,7 @@ Please also see the [tutorial Jupyter notebook](tutorial.ipynb).
 ## Installation
 Note: currently, may only work with Python 3
 - `pip install scsprox`
+- optionally, run tests with `py.test --pyargs scsprox`
 
 ## Basic Usage
 The `Prox` object
