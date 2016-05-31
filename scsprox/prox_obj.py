@@ -2,7 +2,7 @@
 import numpy as np
 import cyscs
 
-from scsprox.scsprox import stuffed_prox, do_prox_work
+from .scsprox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
 class Prox:
@@ -35,30 +35,34 @@ class Prox:
 
         """
         kwargs['verbose'] = verbose
-        self.info = {}
 
-        #with DictTimer('stuffing_time', self.info):
-        data, self.indmap, self.solmap = stuffed_prox(prob, x_vars)
+        data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
 
-        #with DictTimer('init_time_outer', self.info):
-        self.work = cyscs.Workspace(data, data['dims'], **kwargs)
+        self._work = cyscs.Workspace(data, data['dims'], **kwargs)
 
-        self.bc = dict(b=data['b'],c=data['c'])
+        self._bc = dict(b=data['b'],c=data['c'])
 
         self._warm_start = None
 
-        self.info['setup_time'] = self.work.info['setupTime']*1e-3 # convert to seconds
+    @property
+    def info(self):
+        info = {}
+        # convert to seconds
+        info['setup_time'] = self._work.info['setupTime']*1e-3
+        info['solve_time'] = self._work.info['solveTime']*1e-3
+        info['iter'] = self._work.info['iter']
+        info['status'] = self._work.info['status']
 
-        for key in 'solve_time', 'iter', 'status':
-            self.info[key] = None
+        return info
 
+    @property
     def zero_elem(self):
         """ Using the names and sizes of the input variables,
         construct and return the zero element for this proxer.
         """
         x0 = {}
-        for k in self.solmap:
-            s = self.solmap[k] # a slice object
+        for k in self._solmap:
+            s = self._solmap[k] # a slice object
             length = s.stop - s.start
             if length == 1:
                 x0[k] = 0.0
@@ -80,29 +84,53 @@ class Prox:
         """
 
         if not x0:
-            x0 = self.zero_elem()
+            x0 = self.zero_elem
 
-        #with DictTimer('prox_time_outer', self.info):
-        x, scs_sol = do_prox_work(self.work, self.bc, self.indmap,
-                         self.solmap, x0, rho, warm_start=self._warm_start, **kwargs)
-
-        self.info['solve_time'] = self.work.info['solveTime']*1e-3
-        self.info['iter'] = self.work.info['iter']
-        self.info['status'] = self.work.info['status']
+        x, scs_sol = do_prox_work(self._work, self._bc, self._indmap,
+                                  self._solmap, x0, rho,
+                                  warm_start=self._warm_start, **kwargs)
 
         self._warm_start = dict(x=scs_sol['x'], y=scs_sol['y'], s=scs_sol['s'])
 
         if 'Solved' not in self.info['status']:
-            raise RuntimeError('Unexpected solver status: {}'.format(self.info['status']))
-
+            msg = 'Unexpected solver status: {}'.format(self.info['status'])
+            raise RuntimeError(msg)
 
         return x
 
-def formADMMprox(prox):
-    def foo(x0=None, rho=1.0):
-        x = prox.do(x0, rho)
+def admmwrapper(prox):
+    """ Form a prox function that returns an `info` dict along with prox vars.
+    This is used for ADMM algorithms which require pure prox functions
+    (not objects), and expect state information to be returned along with
+    prox variables.
+    """
+    def foo(x0=None, rho=1.0, **kwargs):
+        """ ADMM-style pure prox function.
+
+        Parameters
+        ----------
+        x0: dict
+            Prox input variables
+        rho: float
+            prox rho value
+        kwargs: dict
+            Optional SCS solver settings
+
+        Returns
+        -------
+        x: dict
+            Result of the prox computation
+        info: dict
+            Solver status information, with keys: 
+            'time', 'iter', 'status'
+        """
+        x = prox.do(x0, rho, **kwargs)
+        
         info = prox.info
-        d = dict(time=info['solve_time'], iter=info['iter'], status=info['status'])
-        return x, d
+        info = dict(time=info['solve_time'],
+                    iter=info['iter'],
+                    status=info['status'])
+
+        return x, info
     
     return foo

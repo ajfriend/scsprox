@@ -44,7 +44,7 @@ def test2():
         # should not be close to start
         assert not np.allclose(x0[k], true_sol[k], atol=1e-4) 
 
-    prox.work.settings['eps'] = 1e-5
+    prox._work.settings['eps'] = 1e-5
     for _ in range(100):
         x0 = prox.do(x0, verbose=False)
 
