@@ -90,6 +90,9 @@ def param_map(pxprob, x0_vars):
     rand_param_vals(x0_vars)
     
     data = pxprob.get_problem_data('SCS')
+    # A = data['A']
+    # A.indptr = A.indptr.astype(np.int64)
+    # A.indices = A.indices.astype(np.int64)
     
     # tau may be mapped to multiple locations in the c vector
     taus, = np.where(data['c']==x0_vars['__tau'].value) 

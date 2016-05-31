@@ -96,3 +96,12 @@ class Prox:
 
 
         return x
+
+def formADMMprox(prox):
+    def foo(x0=None, rho=1.0):
+        x = prox.do(x0, rho)
+        info = prox.info
+        d = dict(time=info['solve_time'], iter=info['iter'], status=info['status'])
+        return x, d
+    
+    return foo
