@@ -10,6 +10,8 @@ warm-starting to reduce solve times over many repeated solves,
 as occurs, for example, within the alternating-direction method
 of multipliers (ADMM) algorithm.
 
+Please also see the [tutorial Jupyter notebook](tutorial.ipynb).
+
 ## Installation
 Note: currently, may only work with Python 3
 - `pip install scsprox`

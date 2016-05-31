@@ -1,4 +1,5 @@
 # todo
+- put on PyPI
 - test that varialbes not present in the problem raise an error
 - get 2d CVXPY variables working
 - make sure to check that stuffing is correct
@@ -8,3 +9,4 @@
 - ecos and SCS should both work
 - separate out SCS and cySCS
 - solving and saving warm-start params can be decomplected
+- extra tests that prox is correct
