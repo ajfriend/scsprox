@@ -8,8 +8,8 @@ import psutil
 
 import numpy as np
 
-from proximal import Prox
-from proximal.examples import example_rand
+from scsprox import Prox
+from scsprox.examples import example_rand
 
 import pytest
 

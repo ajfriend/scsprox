@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='proximal',
+    name='scsprox',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -12,7 +12,7 @@ setup(
     long_description="Converts a CVXPY problem and a dict of CVXPY variables to a fast prox object, which uses CySCS to provide fast proximal evaluation, via one-time matrix stuffing, CySCS factorization caching, and automatic warm-starting of variables.",
 
     # The project's main homepage.
-    url='https://github.com/pypa/sampleproject',
+    url='https://github.com/ajfriend/scsprox',
 
     # Author details
     author='AJ Friend',
@@ -26,7 +26,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=['proximal'],
+    packages=['scsprox'],
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:

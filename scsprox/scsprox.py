@@ -1,8 +1,8 @@
 import scs
 import numpy as np
 
-from proximal.scs_mapping import get_solmap, extract_sol, form_prox, rand_param_vals, param_map, restuff
-from proximal.examples import example, example2, example3
+from .scs_mapping import get_solmap, extract_sol, form_prox, rand_param_vals, param_map, restuff
+from .examples import example, example2, example3
 
 
 """

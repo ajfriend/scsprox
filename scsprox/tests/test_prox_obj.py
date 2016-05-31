@@ -1,5 +1,5 @@
-from proximal.prox_obj import Prox
-from proximal.examples import example, example2, example3, example_rand
+from scsprox.prox_obj import Prox
+from scsprox.examples import example, example2, example3, example_rand
 
 import numpy as np
 

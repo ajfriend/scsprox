@@ -1,5 +1,5 @@
-from proximal.scs_mapping import get_solmap, extract_sol, dummy_scs_output, form_prox, rand_param_vals
-from proximal.examples import example, example2, example3
+from scsprox.scs_mapping import get_solmap, extract_sol, dummy_scs_output, form_prox, rand_param_vals
+from scsprox.examples import example, example2, example3
 import numpy as np
 
 import scs
