@@ -1,0 +1,29 @@
+language: python
+sudo: false
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+addons:
+  apt:
+    packages:
+    - gfortran
+    - libblas-dev
+    - liblapack-dev
+    - libatlas-dev
+    - libatlas-base-dev
+before_install:
+  - pip install -U pip setuptools pytest wheel
+  - travis_wait pip install -U numpy
+  - travis_wait pip install -U scipy
+  - travis_wait pip install -U cvxpy
+  - travis_wait pip install -U cyscs
+install:
+  - python setup.py install
+script:
+  - py.test scsprox
+cache:
+  - apt
+  - directories:
+    - $HOME/.cache/pip
