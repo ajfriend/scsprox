@@ -19,5 +19,5 @@ setup(
 
     packages=['scsprox'],
 
-    install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs', 'pytest'],
+    install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs', 'pytest', 'psutil'],
 )
