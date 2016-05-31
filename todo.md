@@ -1,4 +1,5 @@
 # todo
+- note that it only accepts minimization problems!
 - put on PyPI
 - test that varialbes not present in the problem raise an error
 - get 2d CVXPY variables working
