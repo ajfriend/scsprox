@@ -5,7 +5,7 @@ import cyscs
 from .scsprox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
-class Prox:
+class Prox(object):
     """ Class which forms the prox problem for a given CVXPY problem and variables.
 
     SCS input data is stuffed only once at initialization to save time.
