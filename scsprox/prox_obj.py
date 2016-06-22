@@ -36,9 +36,12 @@ class Prox(object):
         """
         kwargs['verbose'] = verbose
 
-        data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
+        self._info = {}
+        with DictTimer('cvxpy_time', self._info):
+            data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
 
-        self._work = cyscs.Workspace(data, data['dims'], **kwargs)
+        with DictTimer('outer_setup_time', self._info):
+            self._work = cyscs.Workspace(data, data['dims'], **kwargs)
 
         self._bc = dict(b=data['b'],c=data['c'])
 
@@ -52,6 +55,9 @@ class Prox(object):
         info['solve_time'] = self._work.info['solveTime']*1e-3
         info['iter'] = self._work.info['iter']
         info['status'] = self._work.info['status']
+
+        for k in 'cvxpy_time', 'outer_setup_time':
+            info[k] = self._info[k]
 
         return info
 
