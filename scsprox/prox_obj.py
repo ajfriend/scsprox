@@ -5,6 +5,10 @@ import cyscs
 from .scsprox import stuffed_prox, do_prox_work
 from .timer import DictTimer
 
+_cvxpytime = 'cvxpy_time'
+_outer_setup_time = 'outer_scs_setup_time'
+_scs_setup_time = 'scs_setup_time'
+
 class Prox(object):
     """ Class which forms the prox problem for a given CVXPY problem and variables.
 
@@ -21,6 +25,7 @@ class Prox(object):
     Solver info can be seen from the prox.info attribute.
 
     """
+
     def __init__(self, prob, x_vars, verbose=False, **kwargs):
         """ Forms the proximal problem, stuffs the appropriate SCS matrices,
         and stores the array/matrix data.
@@ -37,26 +42,29 @@ class Prox(object):
         kwargs['verbose'] = verbose
 
         self._info = {}
-        with DictTimer('cvxpy_time', self._info):
+        with DictTimer(_cvxpytime, self._info):
             data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
 
-        with DictTimer('outer_setup_time', self._info):
+        with DictTimer(_outer_setup_time, self._info):
             self._work = cyscs.Workspace(data, data['dims'], **kwargs)
 
         self._bc = dict(b=data['b'],c=data['c'])
 
         self._warm_start = None
 
+    def __call__(self, x0=None, rho=1.0, **kwargs):
+        return self._do(x0, rho, **kwargs)
+
     @property
     def info(self):
         info = {}
         # convert to seconds
-        info['setup_time'] = self._work.info['setupTime']*1e-3
-        info['solve_time'] = self._work.info['solveTime']*1e-3
+        info[_scs_setup_time] = self._work.info['setupTime']*1e-3
+        info['time'] = self._work.info['solveTime']*1e-3
         info['iter'] = self._work.info['iter']
         info['status'] = self._work.info['status']
 
-        for k in 'cvxpy_time', 'outer_setup_time':
+        for k in _cvxpytime, _outer_setup_time:
             info[k] = self._info[k]
 
         return info
@@ -83,7 +91,7 @@ class Prox(object):
         self._warm_start = None
 
 
-    def do(self, x0=None, rho=1.0, **kwargs):
+    def _do(self, x0=None, rho=1.0, **kwargs):
         """ Do the prox computation based on values in `x0`.
         `x0` can be None or an empty dict, in which case, it will prox
         on the 0 element of the appropriate size.
@@ -103,40 +111,3 @@ class Prox(object):
             raise RuntimeError(msg)
 
         return x
-
-def admmwrapper(prox):
-    """ Form a prox function that returns an `info` dict along with prox vars.
-    This is used for ADMM algorithms which require pure prox functions
-    (not objects), and expect state information to be returned along with
-    prox variables.
-    """
-    def foo(x0=None, rho=1.0, **kwargs):
-        """ ADMM-style pure prox function.
-
-        Parameters
-        ----------
-        x0: dict
-            Prox input variables
-        rho: float
-            prox rho value
-        kwargs: dict
-            Optional SCS solver settings
-
-        Returns
-        -------
-        x: dict
-            Result of the prox computation
-        info: dict
-            Solver status information, with keys: 
-            'time', 'iter', 'status'
-        """
-        x = prox.do(x0, rho, **kwargs)
-        
-        info = prox.info
-        info = dict(time=info['solve_time'],
-                    iter=info['iter'],
-                    status=info['status'])
-
-        return x, info
-    
-    return foo

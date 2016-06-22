@@ -8,7 +8,7 @@ def test():
         prob, x_vars = ex()
         prox = Prox(prob, x_vars, verbose=False)
 
-        x_vals = prox.do()
+        x_vals = prox()
 
 def test2():
     m,n = 10, 5
@@ -16,18 +16,18 @@ def test2():
     prob, x_vars, true_sol = example_rand(m,n,seed)
     prox = Prox(prob, x_vars, verbose=False)
 
-    prox.do()
+    prox()
     assert prox.info['status'] == 'Solved'
     assert prox.info['iter'] >= 20
 
     # check that warm-starting worked
-    prox.do()
+    prox()
     assert prox.info['status'] == 'Solved'
     assert prox.info['iter'] == 0
 
     # reset the warm-start
     prox.reset_warm_start()
-    x0 = prox.do()
+    x0 = prox()
     assert prox.info['status'] == 'Solved'
     assert prox.info['iter'] >= 20
 
@@ -46,7 +46,7 @@ def test2():
 
     prox._work.settings['eps'] = 1e-5
     for _ in range(100):
-        x0 = prox.do(x0, verbose=False)
+        x0 = prox(x0, verbose=False)
 
     for k in 'x', 'y', 'z':
         assert np.allclose(x0[k], true_sol[k], atol=1e-4) 
