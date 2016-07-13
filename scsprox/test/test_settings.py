@@ -21,3 +21,16 @@ def test1():
     with pytest.raises(ValueError):
         prox()
 
+def test_defaults():
+    prob, xvars = example()
+    prox = Prox(prob, xvars)
+
+    assert prox.settings == dict(eps=1e-3, max_iters=100, verbose=False)
+
+    # make sure the CySCS settings are set to the correct defaults
+    assert prox._work.settings['eps'] == 1e-3
+    assert prox._work.settings['max_iters'] == 100
+    assert prox._work.settings['verbose'] == False
+
+
+

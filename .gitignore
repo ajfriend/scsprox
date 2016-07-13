@@ -2,5 +2,4 @@
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
-
-env3/
+.coverage

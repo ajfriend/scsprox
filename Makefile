@@ -5,8 +5,11 @@
 # can run -vs, where s makes it not capture output
 # the -l flag will print out a list of local variables with their corresponding values when a test fails
 test:
-	#py.test scsprox -vs # this tests the *installed* verstion
-	py.test --pyargs scsprox -vs # this should test the local directory version, so as not to require installation
+	py.test scsprox -vs
+	#py.test --pyargs scsprox -vs # this command will test for an installed version, if called outside of this dir
+
+coverage:
+	py.test --cov=scsprox -vs
 
 clean:
 	-pip uninstall scsprox -y
@@ -14,7 +17,7 @@ clean:
 	#-find . -name "*.cache" -exec rm -rf {} \;
 	#-find . -name "__pycache__" -exec rm -rf {} \;
 	-rm -rf __pycache__ scsprox/__pycache__ scsprox/test/__pycache__ .cache scsprox/test/*.pyc scsprox/*.pyc
-	-rm -rf .ipynb_checkpoints/
+	-rm -rf .ipynb_checkpoints/ .coverage
 
 install:
 	python setup.py install

@@ -26,7 +26,7 @@ class Prox(object):
 
     """
 
-    def __init__(self, prob, x_vars, verbose=False, **kwargs):
+    def __init__(self, prob, x_vars, **settings):
         """ Forms the proximal problem, stuffs the appropriate SCS matrices,
         and stores the array/matrix data.
         After initialization, doesn't depend on CVXPY in any way.
@@ -39,21 +39,21 @@ class Prox(object):
             of the variables as they'll be referred to in the input to the prox
 
         """
-        kwargs['verbose'] = verbose
+        self.settings = self.default_settings()
+        self.update_settings(**settings)
 
         self._info = {}
         with DictTimer(_cvxpytime, self._info):
             data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
 
         with DictTimer(_outer_setup_time, self._info):
-            self._work = cyscs.Workspace(data, data['dims'], **kwargs)
+            self._work = cyscs.Workspace(data, data['dims'], **self.settings)
 
         self._bc = dict(b=data['b'],c=data['c'])
 
         self._warm_start = None
 
-        self.settings = self.default_settings()
-
+        
     def __call__(self, x0=None, rho=1.0, **settings):
         return self._do(x0, rho, **settings)
 

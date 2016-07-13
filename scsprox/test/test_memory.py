@@ -25,7 +25,7 @@ if TEST_ON:
     def test_memory():
         prob, x_vars, _ = example_rand(100, 50)
         prox = Prox(prob, x_vars, verbose=False, max_iters=20, eps=1e-7)
-        x0 = prox.do()
+        x0 = prox()
 
 
         num_checks = 100
@@ -35,11 +35,11 @@ if TEST_ON:
 
         # a few iterations allows the memory variation to settle down
         for _ in range(check_iters*3):
-            x0 = prox.do(x0)
+            x0 = prox(x0)
 
         # see if memory grows with iterations
         for i in range(num_checks*check_iters):
-            x0 = prox.do(x0)
+            x0 = prox(x0)
 
             if (i+1) % check_iters == 0:
                 m = get_mem_MB()

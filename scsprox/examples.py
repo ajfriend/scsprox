@@ -1,6 +1,10 @@
 import numpy as np
 import cvxpy as cvx
 
+def print_file():
+    import os
+    print('\nRunning package from:', os.path.abspath(__file__))
+
 
 def example():
     x = cvx.Variable()
