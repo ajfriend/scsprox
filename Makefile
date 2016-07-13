@@ -5,7 +5,8 @@
 # can run -vs, where s makes it not capture output
 # the -l flag will print out a list of local variables with their corresponding values when a test fails
 test:
-	py.test scsprox -vs
+	#py.test scsprox -vs # this tests the *installed* verstion
+	py.test --pyargs scsprox -vs # this should test the local directory version, so as not to require installation
 
 clean:
 	-pip uninstall scsprox -y

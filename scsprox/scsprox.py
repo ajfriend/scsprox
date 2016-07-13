@@ -34,7 +34,7 @@ def do_prox(data, indmap, solmap, x0_vals, rho):
     
     return x_vals
 
-def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **kwargs):
+def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **settings):
     # don't modify original dict
     x0_vals = dict(x0_vals)
     # set tau in x0_vals
@@ -43,7 +43,7 @@ def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **kwar
     # modifies bc
     restuff(bc, indmap, x0_vals)
     
-    scs_sol = work.solve(new_bc=bc, warm_start=warm_start, **kwargs)
+    scs_sol = work.solve(new_bc=bc, warm_start=warm_start, **settings)
     scs_x = scs_sol['x']
     
     x_vals = extract_sol(scs_x, solmap)

@@ -52,8 +52,10 @@ class Prox(object):
 
         self._warm_start = None
 
-    def __call__(self, x0=None, rho=1.0, **kwargs):
-        return self._do(x0, rho, **kwargs)
+        self.settings = self.default_settings()
+
+    def __call__(self, x0=None, rho=1.0, **settings):
+        return self._do(x0, rho, **settings)
 
     @property
     def info(self):
@@ -90,24 +92,44 @@ class Prox(object):
     def reset_warm_start(self):
         self._warm_start = None
 
+    @staticmethod
+    def default_settings():
+        return dict(eps=1e-3, max_iters=100, verbose=False)
 
-    def _do(self, x0=None, rho=1.0, **kwargs):
+    def check_settings(self):
+        default = self.default_settings()
+        if not set(default.keys()) == set(self.settings.keys()):
+            raise ValueError('Invalid settings dict. Compare with default_settings().')
+            
+    def update_settings(self, **settings):
+        for key in settings:
+            if key in self.settings:
+                self.settings[key] = settings[key]
+            else:
+                raise ValueError('Invalid settings key: {}'.format(key))
+                
+        self.check_settings()
+
+
+    def _do(self, x0=None, rho=1.0, **settings):
         """ Do the prox computation based on values in `x0`.
         `x0` can be None or an empty dict, in which case, it will prox
         on the 0 element of the appropriate size.
         """
+        self.update_settings(**settings)
 
         if not x0:
             x0 = self.zero_elem
 
         x, scs_sol = do_prox_work(self._work, self._bc, self._indmap,
                                   self._solmap, x0, rho,
-                                  warm_start=self._warm_start, **kwargs)
+                                  warm_start=self._warm_start, **self.settings)
 
         self._warm_start = dict(x=scs_sol['x'], y=scs_sol['y'], s=scs_sol['s'])
 
         if 'Solved' not in self.info['status']:
             msg = 'Unexpected solver status: {}'.format(self.info['status'])
             raise RuntimeError(msg)
+            #print("Warning: {}".format(msg))
 
         return x
