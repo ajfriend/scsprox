@@ -112,7 +112,7 @@ def param_map(pxprob, x0_vars):
         if k != '__tau':
             # because x.value sometimes returns a float, and sometimes returns a 2d np.Matrix...
             # this cleans it all up to be a 1d array in either case
-            x = np.atleast_1d(np.squeeze(np.array(x0_vars[k].value)))
+            x = np.array(x0_vars[k].value).flatten('F')
             ind, = np.where(b==-2*x[0])
             ind = ind[0]
             
@@ -185,7 +185,7 @@ def get_solmap(prob, x_vars, data=None):
     
     solmap = {}
     for k in x_vars:
-        x = np.atleast_1d(np.squeeze(np.array(x_vars[k].value)))
+        x = np.array(x_vars[k].value).flatten('F')
         ind, = np.where(x[0]==out['x'])
         ind = ind[0]
         solmap[k] = slice(ind,ind+len(x))
