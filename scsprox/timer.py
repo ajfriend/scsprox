@@ -1,6 +1,7 @@
 import time
 from contextlib import contextmanager
 
+
 @contextmanager
 def SimpleTimer():
     elapsed = Elapsed(None)

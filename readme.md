@@ -29,14 +29,14 @@ creates a fast proximal operator from any
 
 ```python
 import numpy as np
-import cxvpy as cvx
+import cxvpy as cp
 
 m, n = 200, 100
 A = np.random.randn(m,n)
 b = np.random.randn(m)
-x = cvx.Variable(n)
+x = cp.Variable(n)
 
-prob = cvx.Problem(cvx.Minimize(cvx.norm(A*x-b)))
+prob = cp.Problem(cp.Minimize(cp.norm(A*x - b)))
 
 xvars = {'x': x}
 prox = Prox(prob, xvars)

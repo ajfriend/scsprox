@@ -1,4 +1,3 @@
-
 import numpy as np
 import cyscs
 
@@ -8,6 +7,7 @@ from .timer import DictTimer
 _cvxpytime = 'cvxpy_time'
 _outer_setup_time = 'outer_scs_setup_time'
 _scs_setup_time = 'scs_setup_time'
+
 
 class Prox(object):
     """ Class which forms the prox problem for a given CVXPY problem and variables.
@@ -23,7 +23,6 @@ class Prox(object):
     or the .do() function. This might set the max iters or the solver tolerance.
 
     Solver info can be seen from the prox.info attribute.
-
     """
 
     def __init__(self, prob, x_vars, **settings):
@@ -44,12 +43,14 @@ class Prox(object):
 
         self._info = {}
         with DictTimer(_cvxpytime, self._info):
-            data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
+            problem_data, self._indmap, self._solmap = stuffed_prox(prob, x_vars)
 
+        data = problem_data.data
         with DictTimer(_outer_setup_time, self._info):
-            self._work = cyscs.Workspace(data, data['dims'], **self.settings)
+            cone = problem_data.cone_dims_for_scs
+            self._work = cyscs.Workspace(data, cone, **self.settings)
 
-        self._bc = dict(b=data['b'],c=data['c'])
+        self._bc = dict(b=data['b'], c=data['c'])
 
         self._warm_start = None
 

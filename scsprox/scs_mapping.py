@@ -1,20 +1,23 @@
-import cvxpy as cvx
+import cvxpy as cp
 import numpy as np
+
+from cvxpy.reductions.solvers.conic_solvers.scs_conif import dims_to_solver_dict
 
 
 def copy_prob(prob):
-    return cvx.Problem(prob.objective, prob.constraints)
+    return cp.Problem(prob.objective, prob.constraints)
+
 
 def get_scs_data(prob):
-    data = prob.get_problem_data('SCS')
+    problem_data = ProblemData(*prob.get_problem_data(cp.SCS))
 
     # convert sparse indices and pointers to int64 so that CySCS doesn't
     # need to convert them itself (which raises a warning).
-    A = data['A']
+    A = problem_data.data['A']
     A.indptr = A.indptr.astype(np.int64)
     A.indices = A.indices.astype(np.int64)
 
-    return data
+    return problem_data
 
 
 def form_prox(prob, x_vars):
@@ -24,7 +27,7 @@ def form_prox(prob, x_vars):
     
     form the prox problem:
 
-    min f(x) + tau*||x-x0||^2
+    min f(x) + tau * ||x - x0||^2
     
     Parameters
     ----------
@@ -40,18 +43,17 @@ def form_prox(prob, x_vars):
         x0_vars also contains special key '__tau', which corresponds to the regularization parameter
     """
 
-    tau = cvx.Parameter(sign="positive")    
-    x0_vars = {'__tau':tau}
+    tau = cp.Parameter(nonneg=True)
+    x0_vars = {'__tau': tau}
 
     obj = 0
-    for k in x_vars:
-        x = x_vars[k]
-        x0 = cvx.Parameter(*x.size)
+    for k, x in x_vars.items():
+        x0 = cp.Parameter(shape=x.shape)
         x0_vars[k] = x0
         
-        obj = obj + tau*cvx.sum_squares(x - x0)
+        obj = obj + tau * cp.sum_squares(x - x0)
     
-    pxprob = cvx.Problem(prob.objective + cvx.Minimize(obj), prob.constraints)
+    pxprob = cp.Problem(prob.objective + cp.Minimize(obj), prob.constraints)
     
     return pxprob, x0_vars
 
@@ -64,14 +66,16 @@ def rand_param_vals(x0_vars):
     
     Modifies the x0_vars in place!
     """
-    for k in x0_vars:
-        x = x0_vars[k]
-        s = x.size
-        
+    for k, x in x0_vars.items():
         if k == '__tau':
-            x.value = np.random.rand()+1
+            x.value = max(np.random.standard_normal() + 1, 0)
         else:
-            x.value = np.random.randn(*s)
+            if x.ndim == 0:
+                # I think it's better to force it to be a scalar, to be consistent
+                # with the setting of tau.
+                x.value = np.random.standard_normal()
+            else:
+                x.value = np.random.standard_normal(size=x.shape)
             
             
 def param_map(pxprob, x0_vars):
@@ -100,32 +104,34 @@ def param_map(pxprob, x0_vars):
     # set the x0 parameters to random values, and then find those random values in the vectors
     rand_param_vals(x0_vars)
     
-    data = get_scs_data(pxprob)
+    problem_data = get_scs_data(pxprob)
     
     # tau may be mapped to multiple locations in the c vector
-    taus, = np.where(data['c']==x0_vars['__tau'].value) 
+    taus, = np.where(problem_data.data['c'] == x0_vars['__tau'].value)
     
-    indmap = {'__tau':taus}
+    indmap = {'__tau': taus}
     
-    b = data['b']
+    b = problem_data.data['b']
     for k in x0_vars:
         if k != '__tau':
             # because x.value sometimes returns a float, and sometimes returns a 2d np.Matrix...
             # this cleans it all up to be a 1d array in either case
             x = np.atleast_1d(np.squeeze(np.array(x0_vars[k].value)))
-            ind, = np.where(b==-2*x[0])
+            ind, = np.where(b == -2 * x[0])
             ind = ind[0]
             
-            indmap[k] = slice(ind,ind+len(x))
+            indmap[k] = slice(ind, ind + len(x))
     
-    return data, indmap
+    return problem_data, indmap
 
 
 def restuff(data, indmap, x0_vals):
     """ Modify the b,c data in `data` to reflect the x0 prox values
     in x0_vals (which should be appropriately sized numpy arrays or scalars).
-    
-    indmap is the mapping from variable names to b,c indices
+
+    data:
+    indmap: is the mapping from variable names to b,c indices
+    x0_vals:
     
     Notes
     -----
@@ -140,6 +146,7 @@ def restuff(data, indmap, x0_vals):
         if k != '__tau':
             b[indmap[k]] = -2*x0_vals[k]
 
+
 def dummy_scs_output(data):
     """ `data` is a dict of SCS input data
     """
@@ -147,50 +154,53 @@ def dummy_scs_output(data):
     y = np.random.randn(*data['b'].shape)
 
     out = {'info': {'dobj': 0,
-          'iter': 0,
-          'pobj': 0,
-          'relGap': 0,
-          'resDual': 0,
-          'resInfeas': 0,
-          'resPri': 0,
-          'resUnbdd': 0,
-          'setupTime': 0,
-          'solveTime': 0,
-          'status': 'Solved',
-          'statusVal': 1},
-         'x': x,
-         'y': y,
-         's': y}
+                    'iter': 0,
+                    'pobj': 0,
+                    'relGap': 0,
+                    'resDual': 0,
+                    'resInfeas': 0,
+                    'resPri': 0,
+                    'resUnbdd': 0,
+                    'setupTime': 0,
+                    'solveTime': 0,
+                    'status': 'Solved',
+                    'statusVal': 1},
+           'x': x,
+           'y': y,
+           's': y}
 
     return out
 
-def get_solmap(prob, x_vars, data=None):
+
+def get_solmap(prob, x_vars, problem_data=None):
     """
     Parameters
     ----------
+    prob:
     x_vars: dict
         k:v pairs, where v is a CVXPY Variable
+    problem_data:
 
     Returns
     -------
     dict
         elements are Python `slice` objects.
     """
-    if data is None:
-        data = get_scs_data(prob)
+    if problem_data is None:
+        problem_data = get_scs_data(prob)
     
-    out = dummy_scs_output(data)
-
-    prob.unpack_results('SCS', out)
+    out = dummy_scs_output(problem_data.data)
+    prob.unpack_results(out, problem_data.solving_chain, problem_data.inverse_data)
     
     solmap = {}
     for k in x_vars:
         x = np.atleast_1d(np.squeeze(np.array(x_vars[k].value)))
-        ind, = np.where(x[0]==out['x'])
+        ind, = np.where(x[0] == out['x'])
         ind = ind[0]
-        solmap[k] = slice(ind,ind+len(x))
+        solmap[k] = slice(ind, ind+len(x))
         
     return solmap
+
 
 def extract_sol(scs_x, solmap):
     """ Extract a solution from the SCS output variable `x`.
@@ -203,3 +213,38 @@ def extract_sol(scs_x, solmap):
             x_vals[k] = x_vals[k][0]
         
     return x_vals
+
+
+class ProblemData:
+    def __init__(self, data, solving_chain, inverse_data):
+        self.data = data
+        self.solving_chain = solving_chain
+        self.inverse_data = inverse_data
+
+    @property
+    def data(self):
+        return self._data
+
+    @property
+    def solving_chain(self):
+        return self._solving_chain
+
+    @property
+    def inverse_data(self):
+        return self._inverse_data
+
+    @data.setter
+    def data(self, value):
+        self._data = value
+
+    @solving_chain.setter
+    def solving_chain(self, value):
+        self._solving_chain = value
+
+    @inverse_data.setter
+    def inverse_data(self, value):
+        self._inverse_data = value
+
+    @property
+    def cone_dims_for_scs(self):
+        return dims_to_solver_dict(self._data['dims'])

@@ -3,6 +3,7 @@ from scsprox.examples import example
 
 import pytest
 
+
 def test1():
     prob, xvars = example()
     prox = Prox(prob, xvars)
@@ -21,6 +22,7 @@ def test1():
     with pytest.raises(ValueError):
         prox()
 
+
 def test_defaults():
     prob, xvars = example()
     prox = Prox(prob, xvars)
@@ -30,7 +32,7 @@ def test_defaults():
     # make sure the CySCS settings are set to the correct defaults
     assert prox._work.settings['eps'] == 1e-3
     assert prox._work.settings['max_iters'] == 100
-    assert prox._work.settings['verbose'] == False
+    assert not prox._work.settings['verbose']
 
 
 

@@ -3,17 +3,18 @@ from scsprox.examples import example, example2, example3, example_rand
 
 import numpy as np
 
+
 def test():
     for ex in example, example2, example3:
         prob, x_vars = ex()
         prox = Prox(prob, x_vars, verbose=False)
-
         x_vals = prox()
 
+
 def test2():
-    m,n = 10, 5
+    m, n = 10, 5
     seed = 0
-    prob, x_vars, true_sol = example_rand(m,n,seed)
+    prob, x_vars, true_sol = example_rand(m, n, seed)
     prox = Prox(prob, x_vars, verbose=False)
 
     prox()
@@ -49,5 +50,4 @@ def test2():
         x0 = prox(x0, verbose=False)
 
     for k in 'x', 'y', 'z':
-        assert np.allclose(x0[k], true_sol[k], atol=1e-4) 
-    
+        assert np.allclose(x0[k], true_sol[k], atol=1e-4)

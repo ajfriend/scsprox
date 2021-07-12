@@ -1,5 +1,6 @@
 import numpy as np
-import cvxpy as cvx
+import cvxpy as cp
+
 
 def print_file():
     import os
@@ -7,50 +8,44 @@ def print_file():
 
 
 def example():
-    x = cvx.Variable()
-
-    obj = cvx.Minimize(x)
-
+    x = cp.Variable()
+    obj = cp.Minimize(x)
     cons = [x >= 0]
-
-    prob = cvx.Problem(obj, cons)
-    
+    prob = cp.Problem(obj, cons)
     x_vars = dict(x=x)
-    
     return prob, x_vars
+
 
 def example2():
-    x = cvx.Variable(3)
-    y = cvx.Variable(2)
-
-    prob = cvx.Problem(cvx.Minimize(cvx.norm(x) + cvx.norm(2*y)))
-    x_vars = dict(x=x,y=y)
-    
+    x = cp.Variable(2)
+    y = cp.Variable(2)
+    prob = cp.Problem(cp.Minimize(cp.norm(x) + cp.norm(2 * y)))
+    x_vars = dict(x=x, y=y)
     return prob, x_vars
-    
+
+
 def example3():
-    x = cvx.Variable(3)
-    y = cvx.Variable()
-
-    prob = cvx.Problem(cvx.Minimize(cvx.norm(x) + cvx.norm(2*y)))
-    x_vars = dict(x=x,y=y)
-    
+    x = cp.Variable(3)
+    y = cp.Variable()
+    prob = cp.Problem(cp.Minimize(cp.norm(x) + cp.norm(2 * y)))
+    x_vars = dict(x=x, y=y)
     return prob, x_vars
 
-def example_rand(m=10,n=5,seed=0):
+
+def example_rand(m=10, n=5, seed=0):
+    # Generate data.
     assert m > n
-    np.random.seed(0)
-    A = np.random.randn(m,n)
+    np.random.seed(seed)
+    A = np.random.randn(m, n)
     b = np.random.randn(m)
 
-    x = cvx.Variable(n)
-    y = cvx.Variable(m)
-    z = cvx.Variable()
+    x = cp.Variable(n)
+    y = cp.Variable(m)
+    z = cp.Variable()
 
-    obj = cvx.sum_squares(A*x-b) + cvx.norm(A.T*y - x) + 0.1*cvx.norm(y) + cvx.norm(z-y)
-
-    prob = cvx.Problem(cvx.Minimize(obj))
-    x_vars = dict(x=x,y=y,z=z)
+    obj = cp.sum_squares(A @ x - b) + cp.norm(A.T @ y - x) + 0.1 * cp.norm(y) + cp.norm(z - y)
+    prob = cp.Problem(cp.Minimize(obj))
+    x_vars = dict(x=x, y=y, z=z)
 
     prob.solve(solver='ECOS')
     true_sol = dict(x=x.value, y=y.value, z=z.value)
