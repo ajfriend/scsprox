@@ -17,7 +17,7 @@ def example():
 
 
 def example2():
-    x = cp.Variable(2)
+    x = cp.Variable(3)
     y = cp.Variable(2)
     prob = cp.Problem(cp.Minimize(cp.norm(x) + cp.norm(2 * y)))
     x_vars = dict(x=x, y=y)

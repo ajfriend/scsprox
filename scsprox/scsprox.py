@@ -28,13 +28,13 @@ def do_prox(problem_data, indmap, solmap, x0_vals, rho):
     data = problem_data.data
     restuff(data, indmap, x0_vals)
 
-    # Convert the ConeDims object to a dict for use by SCS.
-    out = scs.solve(data, problem_data.cone_dims_for_scs, verbose=False)
+    # Solve via SCS directly.
+    out = scs.solve(data, problem_data.cone_dims_for_scs, verbose=True)
     scs_x = out['x']
     
     x_vals = extract_sol(scs_x, solmap)
     
-    return x_vals
+    return x_vals, out['info']
 
 
 def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **settings):
