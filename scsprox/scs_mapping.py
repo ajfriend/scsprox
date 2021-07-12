@@ -68,7 +68,7 @@ def rand_param_vals(x0_vars):
     """
     for k, x in x0_vars.items():
         if k == '__tau':
-            x.value = max(np.random.standard_normal() + 1, 0)
+            x.value = max(np.random.standard_normal() + 1, 1e-3)
         else:
             if x.ndim == 0:
                 # I think it's better to force it to be a scalar, to be consistent

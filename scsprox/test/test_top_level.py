@@ -22,9 +22,8 @@ def test():
 
 def test2():
     prob, x_vars = example2()
-
-    np.random.seed(2)
-    for i in range(1):
+    # np.random.seed(123)
+    for i in range(100):
         compare_proxes(prob, x_vars, i)
 
 
@@ -41,16 +40,16 @@ def compare_proxes(prob, x_vars, i):
     pxprob, x0_vars = form_prox(prob, x_vars)
 
     # Need to set x0 and rho.
+    rand_param_vals(x0_vars)
     rho = 1.0
     x0_vars['__tau'].value = rho / 2
-    rand_param_vals(x0_vars)
 
     x0_vals = {}
     for k in x_vars:
         x0_vals[k] = np.atleast_1d(np.squeeze(np.array(x0_vars[k].value)))
 
     # Solve using straight CVXPY.
-    pxprob.solve(solver=cp.SCS, verbose=True)
+    pxprob.solve(solver=cp.SCS, verbose=False)
     cvxsol = {}
     for k, x in x_vars.items():
         cvxsol[k] = np.atleast_1d(np.squeeze(np.array(x.value)))
@@ -58,16 +57,22 @@ def compare_proxes(prob, x_vars, i):
     # Now solve it using the technique of this package.
     mysol, scs_info = do_prox(problem_data, indmap, solmap, x0_vals, rho)
 
-    print("\n*********************************************************************************************")
-    print("i = {}".format(i))
+    # Let's do some comparisons.
     cvx_obj = pxprob.value
     scs_obj = scs_info['pobj']
-    print("obj: cvx = {:.6e}  scs = {:.6e}".format(cvx_obj, scs_obj))
-    # assert scs_info['pobj'] == pxprob.value
+
+    SHOW_STDOUT = False
+    if SHOW_STDOUT:
+        print("\n*********************************************************************************************")
+        print("i = {}".format(i))
+        print("obj: cvx = {:.6e}  scs = {:.6e}".format(cvx_obj, scs_obj))
+    assert np.isclose(cvx_obj, scs_obj, atol=1e-3)
 
     for k in mysol:
         r = cp.norm(mysol[k] - cvxsol[k]).value
-        print("{}:\t{}\n\t{}  (r = {:.3e})".format(k, mysol[k], cvxsol[k], r))
-    #     assert np.all(mysol[k] == cvxsol[k])
-    print("*********************************************************************************************\n")
+        if SHOW_STDOUT:
+            print("{}:\t{}\n\t{}  (r = {:.3e})".format(k, mysol[k], cvxsol[k], r))
+        assert np.isclose(r, 0.0, atol=1e-3)
+    if SHOW_STDOUT:
+        print("*********************************************************************************************\n")
 

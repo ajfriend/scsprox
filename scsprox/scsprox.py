@@ -29,7 +29,7 @@ def do_prox(problem_data, indmap, solmap, x0_vals, rho):
     restuff(data, indmap, x0_vals)
 
     # Solve via SCS directly.
-    out = scs.solve(data, problem_data.cone_dims_for_scs, verbose=True)
+    out = scs.solve(data, problem_data.cone_dims_for_scs, verbose=False)
     scs_x = out['x']
     
     x_vals = extract_sol(scs_x, solmap)
