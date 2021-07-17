@@ -22,6 +22,10 @@ def test():
 
 def test2():
     prob, x_vars = example2()
+
+    # These tests as originally implemented were random, meaning
+    # only that no explicit seed was set in advance of them. If you
+    # want to make them deterministic, just uncomment this seed set.
     # np.random.seed(123)
     for i in range(100):
         compare_proxes(prob, x_vars, i)
