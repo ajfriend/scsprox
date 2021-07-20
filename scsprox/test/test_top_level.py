@@ -31,6 +31,14 @@ def test2():
         compare_proxes(prob, x_vars, i)
 
 
+def test_matrix():
+    np.random.seed(123)
+    x = cp.Variable((2, 2))
+    prob = cp.Problem(cp.Minimize(cp.norm(x)))
+    x_vars = dict(x=x)
+    compare_proxes(prob, x_vars, 0)
+
+
 def compare_proxes(prob, x_vars, i):
     """ Form the prox problem, put in some random data,
     and test that the output from solving with CVXPY/SCS

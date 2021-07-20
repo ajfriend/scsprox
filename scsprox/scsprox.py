@@ -1,3 +1,4 @@
+import numpy as np
 import scs
 
 from .scs_mapping import get_solmap, extract_sol, form_prox, rand_param_vals, param_map, restuff
@@ -33,7 +34,8 @@ def do_prox(problem_data, indmap, solmap, x0_vals, rho):
     scs_x = out['x']
     
     x_vals = extract_sol(scs_x, solmap)
-    
+    x_vals = reshape(x_vals, x0_vals)
+
     return x_vals, out['info']
 
 
@@ -50,5 +52,16 @@ def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **sett
     scs_x = scs_sol['x']
     
     x_vals = extract_sol(scs_x, solmap)
+    x_vals = reshape(x_vals, x0_vals)
     
     return x_vals, scs_sol
+
+
+def reshape(x_vals, x0_vals):
+    y = {}
+    for k, x in x_vals.items():
+        if type(x) is np.ndarray:
+            y[k] = np.reshape(x, x0_vals[k].shape, order='F')
+        else:
+            y[k] = x
+    return y

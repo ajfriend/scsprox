@@ -116,7 +116,8 @@ def param_map(pxprob, x0_vars):
         if k != '__tau':
             # because x.value sometimes returns a float, and sometimes returns a 2d np.Matrix...
             # this cleans it all up to be a 1d array in either case
-            x = np.atleast_1d(np.squeeze(np.array(x0_vars[k].value)))
+            # x = np.atleast_1d(np.squeeze(np.array(x0_vars[k].value)))
+            x = np.array(x0_vars[k].value).flatten('F')
             ind, = np.where(b == -2 * x[0])
             ind = ind[0]
             
@@ -142,9 +143,11 @@ def restuff(data, indmap, x0_vals):
     c[indmap['__tau']] = x0_vals['__tau']
     
     b = data['b']
-    for k in x0_vals:
+    for k, x in x0_vals.items():
         if k != '__tau':
-            b[indmap[k]] = -2*x0_vals[k]
+            if type(x) is np.ndarray and x.ndim > 1:
+                x = x.flatten('F')
+            b[indmap[k]] = -2 * x
 
 
 def dummy_scs_output(data):
@@ -194,10 +197,11 @@ def get_solmap(prob, x_vars, problem_data=None):
     
     solmap = {}
     for k in x_vars:
-        x = np.atleast_1d(np.squeeze(np.array(x_vars[k].value)))
+        # x = np.atleast_1d(np.squeeze(np.array(x_vars[k].value)))
+        x = np.array(x_vars[k].value).flatten('F')
         ind, = np.where(x[0] == out['x'])
         ind = ind[0]
-        solmap[k] = slice(ind, ind+len(x))
+        solmap[k] = slice(ind, ind + len(x))
         
     return solmap
 
