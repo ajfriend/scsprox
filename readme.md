@@ -90,8 +90,5 @@ either `numpy.array` or `float` (scalar) values.
 The input `x0` to `Prox.do` must be a dictionary whose values
 are either `numpy.array` or `float` objects.
 
-Note that `scsprox` currently only supports 1D `numpy.array` objects.
-That is, 2D "matrix" `numpy.arrays` variables are not yet supported.
-
 ## Workspace 
 The `Prox` object wraps a `cyscs.Workspace` object, which advanced users can access through the `Prox._work` attribute.

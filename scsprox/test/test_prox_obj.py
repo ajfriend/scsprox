@@ -1,11 +1,11 @@
 from scsprox.prox_obj import Prox
-from scsprox.examples import example, example2, example3, example_rand
+from scsprox.examples import example, example2, example3, example4, example_rand
 
 import numpy as np
 
 
 def test():
-    for ex in example, example2, example3:
+    for ex in example, example2, example3, example4:
         prob, x_vars = ex()
         prox = Prox(prob, x_vars, verbose=False)
         x_vals = prox()

@@ -32,6 +32,14 @@ def example3():
     return prob, x_vars
 
 
+def example4():
+    x = cp.Variable((2, 2))
+    y = cp.Variable((3, 3))
+    prob = cp.Problem(cp.Minimize(cp.norm(x) + cp.norm(2 * y)))
+    x_vars = dict(x=x, y=y)
+    return prob, x_vars
+
+
 def example_rand(m=10, n=5, seed=0):
     # Generate data.
     assert m > n

@@ -32,10 +32,7 @@ def test2():
 
 
 def test_matrix():
-    np.random.seed(123)
-    x = cp.Variable((2, 2))
-    prob = cp.Problem(cp.Minimize(cp.norm(x)))
-    x_vars = dict(x=x)
+    prob, x_vars = example2()
     compare_proxes(prob, x_vars, 0)
 
 

@@ -35,8 +35,7 @@ class Prox(object):
         prob: CVXPY problem
         x_vars: dict
             Dict of the CVXPY Variables we want to prox on. Keys give the names
-            of the variables as they'll be referred to in the input to the prox
-
+            of the variables as they'll be referred to in the input to the prox0
         """
         self.settings = self.default_settings()
         self.update_settings(**settings)
@@ -51,21 +50,18 @@ class Prox(object):
             self._work = cyscs.Workspace(data, cone, **self.settings)
 
         self._bc = dict(b=data['b'], c=data['c'])
-
         self._warm_start = None
 
-        
     def __call__(self, x0=None, rho=1.0, **settings):
         return self._do(x0, rho, **settings)
 
     @property
     def info(self):
-        info = {}
         # convert to seconds
-        info[_scs_setup_time] = self._work.info['setupTime']*1e-3
-        info['time'] = self._work.info['solveTime']*1e-3
-        info['iter'] = self._work.info['iter']
-        info['status'] = self._work.info['status']
+        info = {_scs_setup_time: self._work.info['setupTime'] * 1e-3,
+                'time': self._work.info['solveTime'] * 1e-3,
+                'iter': self._work.info['iter'],
+                'status': self._work.info['status']}
 
         for k in _cvxpytime, _outer_setup_time:
             info[k] = self._info[k]
@@ -79,7 +75,7 @@ class Prox(object):
         """
         x0 = {}
         for k in self._solmap:
-            s = self._solmap[k] # a slice object
+            s = self._solmap[k]  # a slice object
             length = s.stop - s.start
             if length == 1:
                 x0[k] = 0.0
@@ -111,7 +107,6 @@ class Prox(object):
                 
         self.check_settings()
 
-
     def _do(self, x0=None, rho=1.0, **settings):
         """ Do the prox computation based on values in `x0`.
         `x0` can be None or an empty dict, in which case, it will prox
@@ -131,6 +126,5 @@ class Prox(object):
         if 'Solved' not in self.info['status']:
             msg = 'Unexpected solver status: {}'.format(self.info['status'])
             raise RuntimeError(msg)
-            #print("Warning: {}".format(msg))
 
         return x

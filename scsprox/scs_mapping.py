@@ -43,7 +43,7 @@ def form_prox(prob, x_vars):
         x0_vars also contains special key '__tau', which corresponds to the regularization parameter
     """
 
-    tau = cp.Parameter(nonneg=True)
+    tau = cp.Parameter(pos=True)
     x0_vars = {'__tau': tau}
 
     obj = 0
@@ -145,9 +145,7 @@ def restuff(data, indmap, x0_vals):
     b = data['b']
     for k, x in x0_vals.items():
         if k != '__tau':
-            if type(x) is np.ndarray and x.ndim > 1:
-                x = x.flatten('F')
-            b[indmap[k]] = -2 * x
+            b[indmap[k]] = np.asarray(-2 * x).ravel(order='F')
 
 
 def dummy_scs_output(data):

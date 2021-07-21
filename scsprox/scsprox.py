@@ -43,7 +43,7 @@ def do_prox_work(work, bc, indmap, solmap, x0_vals, rho, warm_start=None, **sett
     # don't modify original dict
     x0_vals = dict(x0_vals)
     # set tau in x0_vals
-    x0_vals['__tau'] = rho/2.0
+    x0_vals['__tau'] = rho / 2.0
     
     # modifies bc
     restuff(bc, indmap, x0_vals)

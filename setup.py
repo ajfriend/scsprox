@@ -19,7 +19,7 @@ setup(
 
     packages=['scsprox'],
     package_data={'scsprox': ['test/*.py']},
-    zip_safe=False, # apparently, this is needed to include the test dir
+    zip_safe=False,  # apparently, this is needed to include the test dir
 
     install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs', 'pytest', 'psutil'],
 )
