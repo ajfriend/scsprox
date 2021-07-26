@@ -21,5 +21,5 @@ setup(
     package_data={'scsprox': ['test/*.py']},
     zip_safe=False,  # apparently, this is needed to include the test dir
 
-    install_requires=['numpy', 'scipy', 'cvxpy', 'cyscs', 'pytest', 'psutil'],
+    install_requires=['numpy', 'scipy', 'cvxpy >= 1.1', 'cyscs', 'pytest', 'psutil'],
 )
