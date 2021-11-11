@@ -15,8 +15,9 @@ of multipliers (ADMM) algorithm.
 Please also see the [tutorial Jupyter notebook](tutorial.ipynb).
 
 ## Installation
-- `pip install scsprox`
-- optionally, run tests with `py.test --pyargs scsprox`
+- Clone this repository.
+- Inside the repository, run `python setup.py install`.
+- Optionally, run tests with `py.test --pyargs scsprox`.
 
 ## Basic Usage
 The `Prox` object
