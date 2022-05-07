@@ -162,10 +162,10 @@ def dummy_scs_output(data):
                     'resInfeas': 0,
                     'resPri': 0,
                     'resUnbdd': 0,
-                    'setupTime': 0,
-                    'solveTime': 0,
+                    'setup_time': 0,
+                    'solve_time': 0,
                     'status': 'Solved',
-                    'statusVal': 1},
+                    'status_val': 1},
            'x': x,
            'y': y,
            's': y}
