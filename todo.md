@@ -2,7 +2,6 @@
 - note that it only accepts minimization problems!
 
 - test that varialbes not present in the problem raise an error
-- get 2d CVXPY variables working
 - make sure to check that stuffing is correct
     - check for more than one find
 - python2 compatible?

@@ -15,8 +15,9 @@ of multipliers (ADMM) algorithm.
 Please also see the [tutorial Jupyter notebook](tutorial.ipynb).
 
 ## Installation
-- `pip install scsprox`
-- optionally, run tests with `py.test --pyargs scsprox`
+- Clone this repository.
+- Inside the repository, run `python setup.py install`.
+- Optionally, run tests with `py.test --pyargs scsprox`.
 
 ## Basic Usage
 The `Prox` object
@@ -29,14 +30,14 @@ creates a fast proximal operator from any
 
 ```python
 import numpy as np
-import cxvpy as cvx
+import cxvpy as cp
 
 m, n = 200, 100
 A = np.random.randn(m,n)
 b = np.random.randn(m)
-x = cvx.Variable(n)
+x = cp.Variable(n)
 
-prob = cvx.Problem(cvx.Minimize(cvx.norm(A*x-b)))
+prob = cp.Problem(cp.Minimize(cp.norm(A*x - b)))
 
 xvars = {'x': x}
 prox = Prox(prob, xvars)
@@ -89,9 +90,6 @@ either `numpy.array` or `float` (scalar) values.
 ## `x0` Datatypes
 The input `x0` to `Prox.do` must be a dictionary whose values
 are either `numpy.array` or `float` objects.
-
-Note that `scsprox` currently only supports 1D `numpy.array` objects.
-That is, 2D "matrix" `numpy.arrays` variables are not yet supported.
 
 ## Workspace 
 The `Prox` object wraps a `cyscs.Workspace` object, which advanced users can access through the `Prox._work` attribute.
